@@ -21,7 +21,8 @@ def sendOtpHelper(number):
                   .create(to=number, channel='sms')
     print(verification.status) 
     return {'status':verification.status,'valid':verification.valid}   
-  except:
+  except Exception as e:
+     print(e)
      return {'status':'something wrong','valid':'null'}          
   
   
