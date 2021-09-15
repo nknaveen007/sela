@@ -34,8 +34,8 @@ def verifyOtpHelper(number, code):
             .services(twilio_service) \
             .verification_checks \
             .create(to=number, code=code)
-        print(verification_check.status, verification_check.valid)
+        print(verification_check.status, verification_check.valid, 'hii')
 
         return {'status': verification_check.status, 'valid': verification_check.valid}
     except:
-        return{'Status': False, 'Message': 'Something wrong'}
+        return{'status': False, 'valid': False}

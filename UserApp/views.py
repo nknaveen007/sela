@@ -26,7 +26,7 @@ def userverify_otp(request, number=0, code=0):
                 user = UserData.objects.get(PhoneNumber=number[2:])
                 userserialiser = UserSerialiser(user)
                 if userserialiser.data['PhoneNumber']:
-                    return JsonResponse({'Status': True, 'UserDetails': userserialiser.data}, safe=False)
+                    return JsonResponse({'Status': True, 'User': {'UserId': userserialiser.data['UserId'], 'UserStatus': userserialiser.data['UserStatus']}}, safe=False)
 
             except Exception as e:
                 er = str(e)
@@ -38,7 +38,7 @@ def userverify_otp(request, number=0, code=0):
                         userdata_serializer.save()
                         user = UserData.objects.get(PhoneNumber=number[2:])
                         userdata_serializer = UserSerialiser(user)
-                        return JsonResponse({'Status': True, 'Registered': False, 'UserData': userdata_serializer.data}, safe=False, status=200)
+                        return JsonResponse({'Status': True, 'User': {'UserId': userdata_serializer.data['UserId'], 'UserStatus': userdata_serializer.data['UserStatus']}}, safe=False, status=200)
                     return JsonResponse('Failed to Add', safe=False)
                 return JsonResponse({'Status': False, 'Message': 'Something wrong'}, safe=False, status=500)
 
@@ -81,7 +81,7 @@ def User_data(request, id=0):
                     user_serializer.save()
                     user = UserData.objects.get(UserId=id)
                     user_serializer = UserSerialiser(user)
-                    return JsonResponse({'updated': 'Successfully', 'Status': 0, 'user data': user_serializer.data}, safe=False)
+                    return JsonResponse({'Status': True, 'Message': 'Data uploaded successfully',  'User': user_serializer.data}, safe=False)
                 return JsonResponse('Failed to Update', safe=False)
 
             else:
@@ -89,14 +89,14 @@ def User_data(request, id=0):
                     user, data={'Name': users_data['Name']})
                 if user_serializer.is_valid():
                     user_serializer.save()
-                    return JsonResponse({'updated': 'Successfully'}, safe=False)
+                    return JsonResponse({'Status': True, 'Message': 'Data updated successfully'}, safe=False)
                 return JsonResponse('Failed to Update', safe=False)
 
         elif request.method == 'DELETE':
             user = UserData.objects.get(UserId=id)
             user.delete()
-            return JsonResponse('Deleted Successfully', safe=False)
+            return JsonResponse({'Status': True, 'Message': 'Data Deleted successfully'}, safe=False)
 
     except Exception as e:
         er_str = str(e)
-        return JsonResponse(er_str, safe=False, status=400)
+        return JsonResponse({'Status': False, 'Message': 'Failed to update', 'Error': er_str}, safe=False, status=400)
