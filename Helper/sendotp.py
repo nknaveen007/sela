@@ -1,8 +1,6 @@
-import json
-import os
 from twilio.rest import Client
 from decouple import config
-import asyncio
+
 
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
@@ -20,7 +18,7 @@ def sendOtpHelper(number):
             .services(twilio_service) \
             .verifications \
             .create(to=number, channel='sms')
-        print(verification.status)
+        print(verification.status, 'verify')
         return {'Status': True, 'Message': 'OTP sent to your given number '+number}
     except Exception as e:
         print(e)
@@ -37,5 +35,5 @@ def verifyOtpHelper(number, code):
         print(verification_check.status, verification_check.valid, 'hii')
 
         return {'status': verification_check.status, 'valid': verification_check.valid}
-    except:
+    except Exception as e:
         return{'status': False, 'valid': False}
