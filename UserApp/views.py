@@ -35,8 +35,8 @@ def userverify_otp(request, number=0, code=0):
             try:
                 otpUser = Otp.objects.get(number=number[2:])
 
-                if otpUser.otp == code:
-                    print(True, otpUser.otp, code)
+                if code == otpUser.otp:
+
                     otpValid = True
                     if otpValid:
                         try:
@@ -57,7 +57,7 @@ def userverify_otp(request, number=0, code=0):
                                         PhoneNumber=number[2:])
                                     userdata_serializer = UserSerialiser(user)
                                     return JsonResponse({'Status': True, 'Message': 'Otp verified successfully', 'User': {'UserId': userdata_serializer.data['UserId'], 'UserStatus': userdata_serializer.data['UserStatus']}}, safe=False, status=200)
-                                return JsonResponse('Failed to Add', safe=False)
+                                return JsonResponse({'Status': False, 'Message': 'Failed to Update'}, safe=False, status=400)
                             return JsonResponse({'Status': False, 'Message': 'Something wrong'}, safe=False, status=500)
                 else:
                     return JsonResponse({'Status': False, 'Message': 'Verification failed!'}, safe=False, status=400)
@@ -69,7 +69,7 @@ def userverify_otp(request, number=0, code=0):
       #  else:
             #  return JsonResponse({'Status': False, 'Message': 'Phone number or OTP is wrong'}, safe=False)
         else:
-            return JsonResponse({'Status': False, 'Message': 'Phone number or OTP is wrong'}, safe=False)
+            return JsonResponse({'Status': False, 'Message': 'Phone number or OTP is wrong'}, safe=False, status=400)
 
 
 @csrf_exempt
@@ -77,8 +77,8 @@ def usersend_otp(request, id=0):
 
     if request.method == 'GET':
         fullnumber = '+'+id
-       # result = sendOtpHelper(fullnumber)
-       # return JsonResponse(result, safe=False)
+        # result = sendOtpHelper(fullnumber)
+        # return JsonResponse(result, safe=False)
         if isValid(id):
             code = random.randint(1000, 9999)
             otpUser = None
@@ -127,8 +127,8 @@ def User_data(request, id=0):
                     user_serializer.save()
                     user = UserData.objects.get(UserId=id)
                     user_serializer = UserSerialiser(user)
-                    return JsonResponse({'Status': True, 'Message': 'Data uploaded successfully',  'User': user_serializer.data}, safe=False)
-                return JsonResponse('Failed to Update', safe=False)
+                    return JsonResponse({'Status': True, 'Message': 'Data updated successfully',  'User': user_serializer.data}, safe=False)
+                return JsonResponse({'Status': False, 'Message': 'Failed to Update'}, safe=False, status=400)
 
             else:
                 user_serializer = UserSerialiser(
@@ -136,7 +136,7 @@ def User_data(request, id=0):
                 if user_serializer.is_valid():
                     user_serializer.save()
                     return JsonResponse({'Status': True, 'Message': 'Data updated successfully'}, safe=False)
-                return JsonResponse('Failed to Update', safe=False)
+                return JsonResponse({'Status': False, 'Message': 'Failed to Update'}, safe=False, status=400)
 
         elif request.method == 'DELETE':
             user = UserData.objects.get(UserId=id)
